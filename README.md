@@ -14,7 +14,7 @@ The project will help consolidate your understanding of authentication, Node.js,
 
 ## Team
 - Isah Abdulsalam
-- Stephen Okoth
+- Stephen Okoth <stephenokoth2002@gmail.com>
 
 ## Learning Objectives
 By the end of this project, you should be able to explain the following concepts without the help of Google:
