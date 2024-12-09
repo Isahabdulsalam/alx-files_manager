@@ -1,11 +1,22 @@
-import { Router } from 'express';
-const express = require('express');
-const AppController = require('../controllers/AppController');
+import express from 'express';
+import AppController from '../controllers/AppController';
+import UsersController from '../controllers/UsersController';
 
-const router = Router();
+function controllerRouting (app) {
+    const router = express.Router();
+    app.use('/', router);
+  
+    router.get('/status', (req, res) => {
+      AppController.getStatus(req, res);
+    });
+  
+    router.get('/stats', (req, res) => {
+      AppController.getStats(req, res);
+    });
+  
+    router.post('/users', (req, res) => {
+      UsersController.postNew(req, res);
+    });
+}
 
-// now we define the API endpoints
-router.get('/status', AppController.getStatus);
-router.get('/stats', AppController.getStats);
-
-export default router;
+export default controllerRouting;
