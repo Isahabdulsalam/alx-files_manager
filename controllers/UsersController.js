@@ -38,7 +38,9 @@ class UsersController {
     try {
       const userToken = request.header('X-Token');
       const authKey = `auth_${userToken}`;
+
       // console.log('USER TOKEN GET ME', userToken);
+      
       const userID = await redisClient.get(authKey);
       console.log('USER KEY GET ME', userID);
       if (!userID) {
