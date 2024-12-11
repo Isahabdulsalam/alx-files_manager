@@ -1,25 +1,50 @@
-import redisClient from '../utils/redis';
-import dbClient from '../utils/db';
+import { checkDbConnection } from '../utils/db.js';
+import { checkRedisConnection } from '../utils/redis.js';
+import { MongoClient } from 'mongodb';
 
 class AppController {
-  static getStatus(request, response) {
+  // GET /status
+  static async getStatus(req, res) {
     try {
-      const redis = redisClient.isAlive();
-      const db = dbClient.isAlive();
-      response.status(200).send({ redis, db });
+      const dbStatus = await checkDbConnection();
+      const redisStatus = await checkRedisConnection();
+
+      res.status(200).json({ redis: redisStatus, db: dbStatus });
     } catch (error) {
-      console.log(error);
+      res.status(500).json({ error: 'Error checking system status' });
     }
   }
 
-  static async getStats(request, response) {
+  // GET /stats
+  static async getStats(req, res) {
     try {
-      const users = await dbClient.nbUsers();
-      const files = await dbClient.nbFiles();
-      response.status(200).send({ users, files });
+      const usersCount = await AppController.countUsers();
+      const filesCount = await AppController.countFiles();
+
+      res.status(200).json({ users: usersCount, files: filesCount });
     } catch (error) {
-      console.log(error);
+      res.status(500).json({ error: 'Error fetching stats' });
     }
+  }
+
+  // Helper method to count users
+  static async countUsers() {
+    const client = await MongoClient.connect(process.env.MONGODB_URI);
+    const db = client.db();
+    const usersCollection = db.collection('users');
+    const usersCount = await usersCollection.countDocuments();
+    await client.close();
+    return usersCount;
+  }
+
+  // Helper method to count files
+  static async countFiles() {
+    const client = await MongoClient.connect(process.env.MONGODB_URI);
+    const db = client.db();
+    const filesCollection = db.collection('files');
+    const filesCount = await filesCollection.countDocuments();
+    await client.close();
+    return filesCount;
   }
 }
 
