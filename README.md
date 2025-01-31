@@ -13,7 +13,7 @@ This project is part of the back-end trimester curriculum. The primary objective
 The project will help consolidate your understanding of authentication, Node.js, MongoDB, Redis, pagination, and background processing.
 
 ## Team
-- Isah Abdulsalam
+- Isah Abdulsalam <isahabdulsalam416@gmail.com>
 - Stephen Okoth <stephenokoth2002@gmail.com>
 
 ## Learning Objectives
