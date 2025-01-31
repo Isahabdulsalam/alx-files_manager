@@ -1,12 +1,11 @@
-import { checkDbConnection } from '../utils/db.js';
+import dbClient from '../utils/db.js'; // Use the dbClient instance from db.js
 import { checkRedisConnection } from '../utils/redis.js';
-import { MongoClient } from 'mongodb';
 
 class AppController {
   // GET /status
   static async getStatus(req, res) {
     try {
-      const dbStatus = await checkDbConnection();
+      const dbStatus = dbClient.isAlive();  // Check DB connection status using dbClient
       const redisStatus = await checkRedisConnection();
 
       res.status(200).json({ redis: redisStatus, db: dbStatus });
@@ -18,33 +17,13 @@ class AppController {
   // GET /stats
   static async getStats(req, res) {
     try {
-      const usersCount = await AppController.countUsers();
-      const filesCount = await AppController.countFiles();
+      const usersCount = await dbClient.nbUsers(); // Use dbClient to count users
+      const filesCount = await dbClient.nbFiles(); // Use dbClient to count files
 
       res.status(200).json({ users: usersCount, files: filesCount });
     } catch (error) {
       res.status(500).json({ error: 'Error fetching stats' });
     }
-  }
-
-  // Helper method to count users
-  static async countUsers() {
-    const client = await MongoClient.connect(process.env.MONGODB_URI);
-    const db = client.db();
-    const usersCollection = db.collection('users');
-    const usersCount = await usersCollection.countDocuments();
-    await client.close();
-    return usersCount;
-  }
-
-  // Helper method to count files
-  static async countFiles() {
-    const client = await MongoClient.connect(process.env.MONGODB_URI);
-    const db = client.db();
-    const filesCollection = db.collection('files');
-    const filesCount = await filesCollection.countDocuments();
-    await client.close();
-    return filesCount;
   }
 }
 
